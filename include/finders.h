@@ -37,5 +37,12 @@ void* find_bl_verify_shsh_generic(struct iboot_img* iboot_in);
 void* find_bl_verify_shsh_insn(struct iboot_img* iboot_in, void* pc);
 void* find_dtre_get_value_bl_insn(struct iboot_img* iboot_in, const char* var);
 void* find_verify_shsh_top(void* ptr);
+void* find_fsboot_str_xref(struct iboot_img* iboot_in);
+void* find_upgrade_str_loc(struct iboot_img* iboot_in);
+void* find_false_str_xref(struct iboot_img* iboot_in);
+void* find_true_str_loc(struct iboot_img* iboot_in);
+void* find_mount_upgrade_bl_8(struct iboot_img* iboot_in);
+void* find_mount_upgrade_bl_9(struct iboot_img* iboot_in);
+void* find_mount_upgrade_bl_10(struct iboot_img* iboot_in);
 
 #endif

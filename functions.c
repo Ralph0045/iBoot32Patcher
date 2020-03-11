@@ -29,6 +29,12 @@ void* bl_search_down(const void* start_addr, int len) {
 void* bl_search_up(const void* start_addr, int len) {
     return pattern_search(start_addr, len, 0xD000F000, 0xD000F800, -1);
 }
+void* blx_search_down(const void* start_addr, int len) {
+    return pattern_search(start_addr, len, 0xE800F000, 0xE800F800, 1);
+}
+void* blx_search_up(const void* start_addr, int len) {
+    return pattern_search(start_addr, len, 0xE800F000, 0xE800F800, -1);
+}
 
 void* find_last_LDR_rd(uintptr_t start, size_t len, const uint8_t rd) {
 	for(uintptr_t i = start; i > 0; i -= sizeof(uint16_t)) {
@@ -274,6 +280,15 @@ void* pattern_search(const void* addr, int len, int pattern, int mask, int step)
 void* push_r4_r7_lr_search_up(const void* start_addr, int len) {
 	// F0 B5
 	return pattern_search(start_addr, len, 0x0000B5F0, 0x0000FFFF, -2);
+}
+
+void* push_r7_lr_search_up(const void* start_addr, int len) {
+    // 80 B5
+    return pattern_search(start_addr, len, 0x0000B580, 0x0000FFFF, -2);
+}
+void* push_r7_lr_search_down(const void* start_addr, int len) {
+    // 80 B5
+    return pattern_search(start_addr, len, 0x0000B580, 0x0000FFFF, 2);
 }
 
 void* pop_search(const void* start_addr, int len, int searchup) {

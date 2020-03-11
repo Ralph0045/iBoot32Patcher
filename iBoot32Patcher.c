@@ -56,6 +56,8 @@ int main(int argc, char** argv) {
     bool ticket_patch = false;
     bool remote_patch = false;
     bool ignore_nvram_patch = false;
+    bool dual_boot_patch = false;
+    bool iloader_patch = false;
     char* custom_color = NULL;
 	struct iboot_img iboot_in;
 
@@ -71,6 +73,8 @@ int main(int argc, char** argv) {
 		printf("\t-c <cmd> <ptr>\tChange a command handler's pointer (hex)\n");
         printf("\t-l RRGGBB\tApply custom background color\n");
         printf("\t-i\t\tIgnore NVRAM boot-partition/ramdisk variables\n");
+        printf("\t--dual-boot\t\tApply patches needed for dual boot \n");
+        printf("\t--iloader\t\tApply patches needed for dual boot \n");
 		return -1;
 	}
 
@@ -108,10 +112,16 @@ int main(int argc, char** argv) {
         if(HAS_ARG("-i", 0)) {
             ignore_nvram_patch = true;
         }
+        if(HAS_ARG("--dual-boot", 0)) {
+            dual_boot_patch = true;
+        }
+        if(HAS_ARG("--iloader", 0)) {
+            iloader_patch = true;
+        }
         
 	}
     
-    if (!rsa_patch && !debug_patch && !ticket_patch && !custom_boot_args && !cmd_handler_str && !remote_patch && !ignore_nvram_patch) {
+    if (!rsa_patch && !debug_patch && !ticket_patch && !custom_boot_args && !cmd_handler_str && !remote_patch && !ignore_nvram_patch && !dual_boot_patch && !iloader_patch) {
         printf("%s: Nothing to patch!\n", __FUNCTION__);
         return -1;
     }
@@ -241,6 +251,22 @@ int main(int argc, char** argv) {
         ret = patch_ignore_nvram(&iboot_in);
         if(!ret) {
             printf("%s: Error doing ignore_nvram_patch()!\n", __FUNCTION__);
+            free(iboot_in.buf);
+            return -1;
+        }
+    }
+    if (dual_boot_patch) {
+        ret = patch_dual_boot(&iboot_in);
+        if(!ret) {
+            printf("%s: Error doing dual_boot_patch()!\n", __FUNCTION__);
+            free(iboot_in.buf);
+            return -1;
+        }
+    }
+    if (iloader_patch) {
+        ret = patch_iloader(&iboot_in);
+        if(!ret) {
+            printf("%s: Error doing iloader_patch()!\n", __FUNCTION__);
             free(iboot_in.buf);
             return -1;
         }

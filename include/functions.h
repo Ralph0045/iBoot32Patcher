@@ -33,6 +33,8 @@ void* _memmem(const void* mem, int size, const void* pat, int size2);
 
 void* bl_search_down(const void* start_addr, int len);
 void* bl_search_up(const void* start_addr, int len);
+void* blx_search_down(const void* start_addr, int len);
+void* blx_search_up(const void* start_addr, int len);
 void* iboot_memmem(struct iboot_img* iboot_in, void* pat);
 void* find_last_LDR_rd(uintptr_t start, size_t len, const uint8_t rd);
 void* find_next_bl_insn_to(struct iboot_img* iboot_in, uint32_t addr);
@@ -57,6 +59,8 @@ void* ldr_to(const void* loc);
 void* memstr(const void* mem, size_t size, const char* str);
 void* pattern_search(const void* addr, int len, int pattern, int mask, int step);
 void* push_r4_r7_lr_search_up(const void* start_addr, int len);
+void* push_r7_lr_search_up(const void* start_addr, int len);
+void* push_r7_lr_search_down(const void* start_addr, int len);
 void* pop_search(const void* start_addr, int len, int searchup);
 void* push_search(const void* start_addr, int len, int searchup);
 void* branch_thumb_unconditional_search(const void* start_addr, int len, int searchup);

@@ -65,7 +65,7 @@ const static struct iboot_interval iboot_intervals[] = {
 	{1940, 1940, 7},
 	{2261, 2261, 8},
 	{2817, 2817, 9},
-	{3393, 3393, 10},
+	{3393, 3406, 10},
 };
 
 uint32_t get_iboot_base_address(void* iboot_buf);

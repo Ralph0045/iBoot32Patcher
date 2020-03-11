@@ -554,3 +554,78 @@ int patch_bgcolor(struct iboot_img* iboot_in, const char* bgcolor) {
     return 1;
 }
 
+int patch_dual_boot(struct iboot_img* iboot_in) {
+    printf("%s: Entering...\n", __FUNCTION__);
+    
+    /* Boot-command = upgrade; iBEC will load bootchain from filesystem */
+    
+    void* fsboot_str_xref = find_fsboot_str_xref(iboot_in);
+    void* upgrade_str_loc = find_upgrade_str_loc(iboot_in);
+    
+    printf("%s: Pointing fsboot xref to %p...\n", __FUNCTION__, upgrade_str_loc);
+    *(uint32_t* )fsboot_str_xref = upgrade_str_loc;
+    
+    int os_vers = get_os_version(iboot_in);
+    
+    if(os_vers <= 7) {
+    
+        /* auto-boot = true ; only needed on iOS 4-5-6-7 iBECs */
+        
+    void* false_str_xref = find_false_str_xref(iboot_in);
+    void* true_str_loc = find_true_str_loc(iboot_in);
+    
+    printf("%s: Pointing false xref to %p...\n", __FUNCTION__, true_str_loc);
+    *(uint32_t* )false_str_xref = true_str_loc;
+    }
+    
+    if(os_vers==4) {
+        /* boot-partition = 1 ; not sure why but if it's set to 2 iBEC will try to load bootchain from fourth partition (probably GPT releated) */
+        
+        void* two_loc = memstr(iboot_in->buf, iboot_in->len, "\x32\x00\x00\x00\x66\x61\x69\x6C");
+        printf("%s: Found 2 at %p...\n", __FUNCTION__, GET_IBOOT_FILE_OFFSET(iboot_in,two_loc));
+        *(uint32_t*)two_loc = bswap32(0x31000000);
+        
+    }
+    
+    if(os_vers >= 8) {
+        /* Mount_upgrade_partition patch ; needed on iOS 8+ iBECs */
+        
+        if(os_vers==8) {
+            void* mount_partition_bl = find_mount_upgrade_bl_8(iboot_in);
+            void* iBoot_str_loc = memstr(iboot_in->buf, iboot_in->len, "iBEC");
+            iBoot_str_loc-=0x50;
+            printf("%s: Adding nand0c string at %p\n",__FUNCTION__, GET_IBOOT_FILE_OFFSET(iboot_in,iBoot_str_loc));
+            strcpy(iBoot_str_loc,"nand0c");
+        }
+        
+        if(os_vers==9) {
+            void* mount_partition_bl = find_mount_upgrade_bl_9(iboot_in);
+            void* iBoot_str_loc = memstr(iboot_in->buf, iboot_in->len, "iBEC");
+            iBoot_str_loc-=0x50;
+            printf("%s: Adding nand0c string at %p\n",__FUNCTION__, GET_IBOOT_FILE_OFFSET(iboot_in,iBoot_str_loc));
+            strcpy(iBoot_str_loc,"nand0c");
+        }
+        
+        if(os_vers==10) {
+            void* mount_partition_bl = find_mount_upgrade_bl_10(iboot_in);
+            void* iBoot_str_loc = memstr(iboot_in->buf, iboot_in->len, "iBootStage2");
+            iBoot_str_loc-=0x50;
+            printf("%s: Adding nand0c string at %p",__FUNCTION__, GET_IBOOT_FILE_OFFSET(iboot_in,iBoot_str_loc));
+            strcpy(iBoot_str_loc,"nand0c");
+        }
+        
+    }
+    
+    printf("%s: Leaving...\n", __FUNCTION__);
+    return 1;
+}
+
+int patch_iloader(struct iboot_img* iboot_in) {
+    printf("%s: Entering...\n", __FUNCTION__);
+    
+    find_iloader_offsets(iboot_in);
+    
+    printf("%s: Leaving...\n", __FUNCTION__);
+    
+    return 1;
+}
